@@ -164,7 +164,7 @@ const register = async (req, res) => {
                             const deletesql = "DELETE FROM users WHERE `users`.`phone` = ?";
                             await connection.execute(deletesql, [username]);
                             const sql = "INSERT INTO users SET id_user = ?,phone = ?,name_user = ?,password = ?,money = ?,code = ?,invite = ?,ctv = ?,veri = ?,otp = ?,ip_address = ?,status = ?,time = ?";
-                            await connection.execute(sql, [id_user, username, name_user, md5(pwd), 0, code, invitecode1, ctv, 1, otp, ip, 1, time]);
+                            await connection.execute(sql, [id_user, username, name_user, md5(pwd), 50, code, invitecode1, ctv, 1, otp, ip, 1, time]);
                             await connection.execute('INSERT INTO point_list SET phone = ?', [username]);
                             return res.status(200).json({
                                 message: 'Register Sucess',
