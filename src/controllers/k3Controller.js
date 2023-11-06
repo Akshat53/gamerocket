@@ -816,7 +816,7 @@ async function plusMoney(game) {
                     get = 207.36;
                     break;
             }
-            nhan_duoc += price * get;
+            nhan_duoc += price * 9;
             await connection.execute('UPDATE `result_k3` SET `get` = ?, `status` = 1 WHERE `id` = ? ', [nhan_duoc, id]);
             const sql = 'UPDATE `users` SET `money` = `money` + ? WHERE `phone` = ? ';
             await connection.execute(sql, [nhan_duoc, phone]);
