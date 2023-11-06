@@ -770,11 +770,11 @@ async function plusMoney(game) {
                 case '3':
                     get = 9;
                     break;
-                case '3':
+                case '4':
                     get = 9;
                     break;
                 case '5':
-                    get = 39;
+                    get = 9;
                     break;
                 case '6':
                     get = 9;

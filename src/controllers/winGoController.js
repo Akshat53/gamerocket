@@ -390,8 +390,8 @@ const addWinGo = async (game) => {
 
         const [winGoNow] = await connection.query(`SELECT period FROM wingo WHERE status = 0 AND game = "${join}" ORDER BY id DESC LIMIT 1 `);
         const [setting] = await connection.query('SELECT * FROM `admin` ');
-        let period = winGoNow[0].period; // cầu hiện tại
-        let amount = Math.floor(Math.random() * 10); // xanh đỏ tím
+        let period = winGoNow[0].period; //current demand 
+        let amount = Math.floor(Math.random() * 10); // blue red purple
         let timeNow = Date.now();
 
         let nextResult = '';
