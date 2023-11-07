@@ -723,104 +723,51 @@ const priceGet = {
 }
 
 async function plusMoney(game) {
-    const [order] = await connection.execute(`SELECT id, phone, bet, price, money, fee, amount, result, typeGame FROM result_k3 WHERE status = 0 AND game = ${game} `);
-    for (let i = 0; i < order.length; i++) {
-        let orders = order[i];
-        let phone = orders.phone;
-        let id = orders.id;
+    const [orders] = await connection.execute(`SELECT id, phone, bet, money, amount, result, typeGame FROM result_k3 WHERE status = 0 AND game = ${game} `);
+
+    for (let i = 0; i < orders.length; i++) {
+        let order = orders[i];
+        let phone = order.phone;
+        let id = order.id;
         let nhan_duoc = 0;
-        let result = orders.result;
-        if (orders.typeGame == "total") {
-            let arr = orders.bet.split(',');
-            let totalResult = orders.result.split('');
-            let totalResult2 = 0;
-            for (let i = 0; i < 3; i++) {
-                totalResult2 += Number(totalResult[i]);
-            }
-            let total = (orders.money / arr.length / orders.amount);
-            let fee = total * 0.02;
-            let price = total - fee;
-            
-            let lengWin = arr.filter(function(age) {
-                return age == totalResult2;
-            });
+        let result = order.result;
+        
+        if (order.typeGame === "total") {
+            let arr = order.bet.split(',');
+            let totalResult = result.split('');
+            let totalResult2 = totalResult.reduce((acc, num) => acc + Number(num), 0);
 
-            let lengWin2 = arr.filter(function(age) {
-                return !isNumber(age);
-            });
+            let total = (order.money / arr.length / order.amount);
+            let price = total; // No fee deduction
 
-            if (totalResult2 % 2 == 0 && lengWin2.includes('c')) {
+            if (totalResult2 % 2 == 0 && arr.includes('c')) {
                 nhan_duoc += price * 1.9;
             }
 
-            if (totalResult2 % 2 != 0 && lengWin2.includes('l')) {
+            if (totalResult2 % 2 != 0 && arr.includes('l')) {
                 nhan_duoc += price * 1.9;
             }
 
-            if (totalResult2 >= 11 && totalResult2 <= 18 && lengWin2.includes('b')) {
+            if (totalResult2 >= 11 && totalResult2 <= 18 && arr.includes('b')) {
                 nhan_duoc += price * 1.9;
             }
 
-            if (totalResult2 >= 3 && totalResult2 <= 11 && lengWin2.includes('s')) {
+            if (totalResult2 >= 3 && totalResult2 <= 11 && arr.includes('s')) {
                 nhan_duoc += price * 1.9;
             }
-            
+
             let get = 0;
-            switch (lengWin[0]) {
-                case '3':
-                    get = 9;
-                    break;
-                case '4':
-                    get = 9;
-                    break;
-                case '5':
-                    get = 9;
-                    break;
-                case '6':
-                    get = 9;
-                    break;
-                case '7':
-                    get = 9;
-                    break;
-                case '8':
-                    get = 9;
-                    break;
-                case '9':
-                    get = 9;
-                    break;
-                case '10':
-                    get = 9;
-                    break;
-                case '11':
-                    get = 9;
-                    break;
-                case '12':
-                    get = 9;
-                    break;
-                case '13':
-                    get = 9;
-                    break;
-                case '14':
-                    get = 9;
-                    break;
-                case '15':
-                    get = 9;
-                    break;
-                case '16':
-                    get = 9;
-                    break;
-                case '17':
-                    get = 9;
-                    break;
-                case '18':
-                    get = 9;
-                    break;
+            if (totalResult2 >= 3 && totalResult2 <= 18) {
+                get = 9;
             }
             nhan_duoc += price * get;
+            
+            // Update the database
             await connection.execute('UPDATE `result_k3` SET `get` = ?, `status` = 1 WHERE `id` = ? ', [nhan_duoc, id]);
             const sql = 'UPDATE `users` SET `money` = `money` + ? WHERE `phone` = ? ';
             await connection.execute(sql, [nhan_duoc, phone]);
         }
+    
         nhan_duoc = 0;
         if (orders.typeGame == "two-same") {
             let kq = result.split('');
