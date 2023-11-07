@@ -686,26 +686,26 @@ async function funHanding(game) {
 
 const priceGet = {
     total: {
-        't3': 207.36,
-        't4': 69.12,
-        't5': 34.56,
-        't6': 20.74,
-        't7': 13.83,
-        't8': 9.88,
-        't9': 8.3,
-        't10': 7.68,
-        't11': 7.68,
-        't12': 8.3,
-        't13': 9.88,
-        't14': 13.83,
-        't15': 20.74,
-        't16': 34.56,
-        't17': 69.12,
-        't18': 207.36,
-        'b': 1.92,
-        's': 1.92,
-        'l': 1.92,
-        'c': 1.92,
+        't3': 9,
+        't4': 9,
+        't5': 9,
+        't6': 9,
+        't7': 9,
+        't8': 9,
+        't9': 9,
+        't10': 9,
+        't11': 9,
+        't12': 9,
+        't13': 9,
+        't14': 9,
+        't15': 9,
+        't16': 9,
+        't17': 9,
+        't18': 9,
+        'b': 1.9,
+        's': 1.9,
+        'l': 1.9,
+        'c': 1.9,
     },
     two: {
         twoSame: 13.83,
@@ -766,60 +766,15 @@ async function plusMoney(game) {
             }
             
             let get = 0;
-            switch (lengWin[0]) {
-                case '3':
-                    get = 9;
-                    break;
-                case '4':
-                    get = 9;
-                    break;
-                case '5':
-                    get = 9;
-                    break;
-                case '6':
-                    get = 9;
-                    break;
-                case '7':
-                    get = 9;
-                    break;
-                case '8':
-                    get = 9;
-                    break;
-                case '9':
-                    get = 9;
-                    break;
-                case '10':
-                    get = 9;
-                    break;
-                case '11':
-                    get = 9;
-                    break;
-                case '12':
-                    get = 9;
-                    break;
-                case '13':
-                    get = 9;
-                    break;
-                case '14':
-                    get = 9;
-                    break;
-                case '15':
-                    get = 9;
-                    break;
-                case '16':
-                    get = 9;
-                    break;
-                case '17':
-                    get = 9;
-                    break;
-                case '18':
-                    get = 9;
-                    break;
+
+            if (['3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18'].includes(lengWin[0])) {
+                get = 9;
             }
+            
             nhan_duoc += price * get;
             await connection.execute('UPDATE `result_k3` SET `get` = ?, `status` = 1 WHERE `id` = ? ', [nhan_duoc, id]);
             const sql = 'UPDATE `users` SET `money` = `money` + ? WHERE `phone` = ? ';
-            await connection.execute(sql, [nhan_duoc, phone]);
+            await connection.execute(sql, [nhanh_duoc, phone]);
         }
         nhan_duoc = 0;
         if (orders.typeGame == "two-same") {
