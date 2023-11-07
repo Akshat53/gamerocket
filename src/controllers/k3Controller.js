@@ -750,70 +750,70 @@ async function plusMoney(game) {
             });
 
             if (totalResult2 % 2 == 0 && lengWin2.includes('c')) {
-                nhan_duoc += price * 1.92;
+                nhan_duoc += price * 1.9;
             }
 
             if (totalResult2 % 2 != 0 && lengWin2.includes('l')) {
-                nhan_duoc += price * 1.92;
+                nhan_duoc += price * 1.9;
             }
 
             if (totalResult2 >= 11 && totalResult2 <= 18 && lengWin2.includes('b')) {
-                nhan_duoc += price * 1.92;
+                nhan_duoc += price * 1.9;
             }
 
             if (totalResult2 >= 3 && totalResult2 <= 11 && lengWin2.includes('s')) {
-                nhan_duoc += price * 1.92;
+                nhan_duoc += price * 1.9;
             }
             
             let get = 0;
             switch (lengWin[0]) {
                 case '3':
-                    get = 207.36;
+                    get = 9;
                     break;
                 case '4':
-                    get = 69.12;
+                    get = 9;
                     break;
                 case '5':
-                    get = 34.56;
+                    get = 9;
                     break;
                 case '6':
-                    get = 20.74;
+                    get = 9;
                     break;
                 case '7':
-                    get = 13.83;
+                    get = 9;
                     break;
                 case '8':
-                    get = 9.88;
+                    get = 9;
                     break;
                 case '9':
-                    get = 8.3;
+                    get = 9;
                     break;
                 case '10':
-                    get = 7.68;
+                    get = 9;
                     break;
                 case '11':
-                    get = 7.68;
+                    get = 9;
                     break;
                 case '12':
-                    get = 8.3;
+                    get = 9;
                     break;
                 case '13':
-                    get = 9.88;
+                    get = 9;
                     break;
                 case '14':
-                    get = 13.83;
+                    get = 9;
                     break;
                 case '15':
-                    get = 20.74;
+                    get = 9;
                     break;
                 case '16':
-                    get = 34.56;
+                    get = 9;
                     break;
                 case '17':
-                    get = 69.12;
+                    get = 9;
                     break;
                 case '18':
-                    get = 207.36;
+                    get = 9;
                     break;
             }
             nhan_duoc += price * get;
