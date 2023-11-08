@@ -509,15 +509,17 @@ const handlingWinGo1P = async (typeid) => {
         if (bet == 'l' || bet == 'n') {
             nhan_duoc = total * 1.9;
         } else {
-            if (result == 0 || result == 5) {
-                if (bet == 'd' || bet == 'x') {
-                    nhan_duoc = total * 1.9;
-                } else if (bet == 't') {
-                    nhan_duoc = total * 1.5;
-                } else if (bet == "0" || bet == "5") {
-                    nhan_duoc = total * 9; 
-                }
-            } else {
+        
+             if(bet == 't' && result == 0 || bet == 't' && result == 5){
+                nhan_duoc = total*1.9
+            }
+            else if (bet == 'x' && result == 5 || bet == 'd' && result == 0){  // tested
+                nhan_duoc = total * 1.5
+            }
+            else if (bet == 'x' || bet =='d' || bet == 't'){
+                nhan_duoc = total * 1.9
+             }
+             else {
                 if (result == 1 && bet == "1") {
                     nhan_duoc = total * 9;
                 } else {
