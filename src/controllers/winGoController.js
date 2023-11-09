@@ -111,8 +111,8 @@ const betWinGo = async (req, res) => {
 
     let userInfo = user[0];
     let period = winGoNow[0].period;
-    let fee = (x * money) * 0.02;
-    let total = (x * money) - fee;
+    // let fee = (x * money) * 0.02;
+    let total = (x * money) ;
     let timeNow = Date.now();
     let check = userInfo.money - total;
 
@@ -213,7 +213,7 @@ const betWinGo = async (req, res) => {
         status = ?,
         today = ?,
         time = ?`;
-        await connection.execute(sql, [id_product, userInfo.phone, userInfo.code, userInfo.invite, period, userInfo.level, total, x, fee, 0, gameJoin, join, 0, checkTime, timeNow]);
+        await connection.execute(sql, [id_product, userInfo.phone, userInfo.code, userInfo.invite, period, userInfo.level, total, x, 0, 0, gameJoin, join, 0, checkTime, timeNow]);
         await connection.execute('UPDATE `users` SET `money` = `money` - ? WHERE `token` = ? ', [money * x, auth]);
         const [users] = await connection.query('SELECT `money`, `level` FROM users WHERE token = ? AND veri = 1  LIMIT 1 ', [auth]);
         await rosesPlus(auth, money * x);
@@ -511,7 +511,7 @@ const handlingWinGo1P = async (typeid) => {
         } else {
         
              if(bet == 't' && result == 0 || bet == 't' && result == 5){
-                nhan_duoc = total*1.9
+                nhan_duoc = total*1.5
             }
             else if (bet == 'x' && result == 5 || bet == 'd' && result == 0){  // tested
                 nhan_duoc = total * 1.5
@@ -520,6 +520,13 @@ const handlingWinGo1P = async (typeid) => {
                 nhan_duoc = total * 1.9
              }
              else {
+                if (result == 0 && bet == "0") {
+                    nhan_duoc = total * 9;
+                } else {
+                    if (result == 0 && bet == 't') {
+                        nhan_duoc = total * 1.5;
+                    }
+                }
                 if (result == 1 && bet == "1") {
                     nhan_duoc = total * 9;
                 } else {
@@ -546,6 +553,14 @@ const handlingWinGo1P = async (typeid) => {
                 } else {
                     if (result == 4 && bet == 'd') {
                         nhan_duoc = total * 1.9;
+                    }
+                }
+
+                if (result == 5 && bet == "5") {
+                    nhan_duoc = total * 9;
+                } else {
+                    if (result == 5 && bet == 't') {
+                        nhan_duoc = total * 1.5;
                     }
                 }
                 if (result == 6 && bet == "6") {

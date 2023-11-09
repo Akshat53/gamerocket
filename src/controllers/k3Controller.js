@@ -202,8 +202,8 @@ const betK3 = async (req, res) => {
             }
             total = threeUn + twoUn + UnlienTiep;
         }
-        let fee = total * 0.02;
-        let price = total - fee;
+        // let fee = total * 0.02;
+        let price = total ;
 
         let typeGame = '';
         if (gameJoin == 1) typeGame = 'total';
@@ -216,7 +216,7 @@ const betK3 = async (req, res) => {
         if (check >= 0) {
             let timeNow = Date.now();
             const sql = `INSERT INTO result_k3 SET id_product = ?,phone = ?,code = ?,invite = ?,stage = ?,level = ?,money = ?,price = ?,amount = ?,fee = ?,game = ?,join_bet = ?, typeGame = ?,bet = ?,status = ?,time = ?`;
-            await connection.execute(sql, [id_product, userInfo.phone, userInfo.code, userInfo.invite, period.period, userInfo.level, total, price, xvalue, fee, game, gameJoin, typeGame, listJoin, 0, timeNow]);
+            await connection.execute(sql, [id_product, userInfo.phone, userInfo.code, userInfo.invite, period.period, userInfo.level, total, price, xvalue, 0, game, gameJoin, typeGame, listJoin, 0, timeNow]);
             await connection.execute('UPDATE `users` SET `money` = `money` - ? WHERE `token` = ? ', [total, auth]);
             const [users] = await connection.query('SELECT `money`, `level` FROM users WHERE token = ? AND veri = 1  LIMIT 1 ', [auth]);
             await rosesPlus(auth, total);
@@ -738,8 +738,8 @@ async function plusMoney(game) {
                 totalResult2 += Number(totalResult[i]);
             }
             let total = (orders.money / arr.length / orders.amount);
-            let fee = total * 0.02;
-            let price = total - fee;
+            // let fee = total * 0.02;
+            let price = total ;
             
             let lengWin = arr.filter(function(age) {
                 return age == totalResult2;
