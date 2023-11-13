@@ -741,7 +741,7 @@ async function plusMoney(game) {
           
         
             // let fee = total * 0.02;
-            let price = total ;
+            let price = total ; 
             
             let lengWin = arr.filter(function(age) {
                 return age == totalResult2;
