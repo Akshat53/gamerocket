@@ -102,103 +102,72 @@ const login = async (req, res) => {
 }
 
 const register = async (req, res) => {
-    let now = new Date().getTime();
-    let { username, pwd, invitecode, otp } = req.body;
-    let id_user = randomNumber(10000, 99999);
-    // let otp2 = randomNumber(100000, 999999);
-    let name_user = "Member" + randomNumber(10000, 99999);
-    let code = randomString(5) + randomNumber(10000, 99999);
-    let ip = ipAddress(req);
-    let time = timeCreate();
-
-    if (!username || !pwd || !invitecode) {
-        return res.status(200).json({
-            message: 'ERROR!!!',
-            status: false
-        });
-    }
-
-    if (username.length < 9 || username.length > 10 || !isNumber(username)) {
-        return res.status(200).json({
-            message: 'phone error',
-            status: false
-        });
-    }
-
     try {
-        const [check_u] = await connection.query('SELECT * FROM users WHERE phone = ? ', [username]);
-        const [check_i] = await connection.query('SELECT * FROM users WHERE code = ? ', [invitecode]);
-        const [check_ip] = await connection.query('SELECT * FROM users WHERE ip_address = ? ', [ip]);
-        let invitecode1;
-        if (check_i.length == 1) {
-            invitecode1 = invitecode;
-        } else {
-            invitecode1 = "6fGGw42409";
-        }
+        let { username, pwd, invitecode } = req.body;
 
-        if (check_u.length == 1 && check_u[0].veri == 1) {
+        // Validation checks for username, pwd, invitecode
+        if (!username || !pwd || !invitecode || username.length < 9 || username.length > 10 || !isNumber(username)) {
             return res.status(200).json({
-                message: 'Registered phone number',
+                message: 'Invalid input',
                 status: false
             });
-        } else {
-            const [rows] = await connection.query('SELECT * FROM users WHERE `phone` = ?', [username]);
-            if (rows.length == 0) {
+        }
+
+        const [check_u] = await connection.query('SELECT * FROM users WHERE phone = ?', [username]);
+        const [check_i] = await connection.query('SELECT * FROM users WHERE code = ?', [invitecode]);
+        const [check_ip] = await connection.query('SELECT * FROM users WHERE ip_address = ?', [ipAddress(req)]);
+
+        let invitecode1 = (check_i.length === 1) ? invitecode : "6fGGw42409";
+
+        if (check_u.length === 1 && check_u[0].veri === 1) {
+            return res.status(200).json({
+                message: 'Phone number already registered',
+                status: false
+            });
+        }
+
+        const [rows] = await connection.query('SELECT * FROM users WHERE `phone` = ?', [username]);
+        if (rows.length === 0) {
+            // Proceed with registration
+            let id_user = randomNumber(10000, 99999);
+            let name_user = "Member" + randomNumber(10000, 99999);
+            let code = randomString(5) + randomNumber(10000, 99999);
+            let ip = ipAddress(req);
+            let time = timeCreate();
+            let ctv = (check_i[0].level === 2) ? check_i[0].phone : check_i[0].ctv;
+
+            if (check_ip.length <= 3) {
+                const deletesql = "DELETE FROM users WHERE `users`.`phone` = ?";
+                await connection.execute(deletesql, [username]);
+
+                const sql = "INSERT INTO users SET id_user = ?,phone = ?,name_user = ?,password = ?,money = ?,code = ?,invite = ?,ctv = ?,veri = ?,ip_address = ?,status = ?,time = ?";
+                await connection.execute(sql, [id_user, username, name_user, md5(pwd), 50, code, invitecode1, ctv, 1, ip, 1, time]);
+
+                await connection.execute('INSERT INTO point_list SET phone = ?', [username]);
                 return res.status(200).json({
-                    message: 'otp error',
-                    status: false,
-                    timeStamp: timeNow,
+                    message: 'Registration Success',
+                    status: true
                 });
             } else {
-                let user = rows[0];
-                if (user.time_otp - now > 0) {
-                    if (user.otp == otp) {
-
-                        if (check_ip.length <= 3) {
-                            let ctv = '';
-                            if (check_i[0].level == 2) {
-                                ctv = check_i[0].phone;
-                            } else {
-                                ctv = check_i[0].ctv;
-                            }
-                            const deletesql = "DELETE FROM users WHERE `users`.`phone` = ?";
-                            await connection.execute(deletesql, [username]);
-                            const sql = "INSERT INTO users SET id_user = ?,phone = ?,name_user = ?,password = ?,money = ?,code = ?,invite = ?,ctv = ?,veri = ?,otp = ?,ip_address = ?,status = ?,time = ?";
-                            await connection.execute(sql, [id_user, username, name_user, md5(pwd), 50, code, invitecode1, ctv, 1, otp, ip, 1, time]);
-                            await connection.execute('INSERT INTO point_list SET phone = ?', [username]);
-                            return res.status(200).json({
-                                message: 'Register Sucess',
-                                status: true
-                            });
-                        } else {
-                            return res.status(200).json({
-                                message: 'Registered IP address',
-                                status: false
-                            });
-                        }
-
-                    } else {
-                        return res.status(200).json({
-                            message: 'OTP code is incorrect',
-                            status: false,
-                            timeStamp: timeNow,
-                        });
-                    }
-                } else {
-                    return res.status(200).json({
-                        message: 'OTP code has expired',
-                        status: false,
-                        timeStamp: timeNow,
-                    });
-                }
+                return res.status(200).json({
+                    message: 'Registered IP address limit reached',
+                    status: false
+                });
             }
-
+        } else {
+            return res.status(200).json({
+                message: 'User already exists',
+                status: false
+            });
         }
     } catch (error) {
-        if (error) console.log(error);
+        console.log(error);
+        return res.status(500).json({
+            message: 'Internal Server Error',
+            status: false
+        });
     }
-
-}
+};
 
 const verifyCode = async (req, res) => {
     let phone = req.body.phone;
@@ -215,7 +184,7 @@ const verifyCode = async (req, res) => {
 
     const [rows] = await connection.query('SELECT * FROM users WHERE `phone` = ?', [phone]);
     if (rows.length == 0) {
-        await request(`https://www.fast2sms.com/dev/bulkV2?authorization=lzJUeXMnVdpbFA9O4S7uwR2N3rDjicHCoskmYtKEfP1aGW0y5gJwI4p9c0OKy2NSlXGDkQvesqLuRo7f&variables_values=${otp}&route=otp&numbers=${phone}`, async (error, response, body) => {
+        await request(`https://www.fast2sms.com/dev/bulkV2?authorization=a6ZbKL8XyIp1cWSiBRg54vhV9DetUujdHENT7oM3nfxqAQw2OFgV5KxyH1iwkGoAB3JSWQh7lEbm8rM6&variables_values=${otp}&route=otp&numbers=${phone}`, async (error, response, body) => {
             let data = JSON.parse(body);
             console.log(data.message);
             if (data.message == 'SMS sent successfully.') {
@@ -231,7 +200,7 @@ const verifyCode = async (req, res) => {
     } else {
         let user = rows[0];
         if (user.time_otp - now <= 0) {
-            request(`https://www.fast2sms.com/dev/bulkV2?authorization=lzJUeXMnVdpbFA9O4S7uwR2N3rDjicHCoskmYtKEfP1aGW0y5gJwI4p9c0OKy2NSlXGDkQvesqLuRo7f&variables_values=${otp}&route=otp&numbers=${phone}`, async (error, response, body) => {
+            request(`https://www.fast2sms.com/dev/bulkV2?authorization=a6ZbKL8XyIp1cWSiBRg54vhV9DetUujdHENT7oM3nfxqAQw2OFgV5KxyH1iwkGoAB3JSWQh7lEbm8rM6&variables_values=${otp}&route=otp&numbers=${phone}`, async (error, response, body) => {
                 let data = JSON.parse(body);
                 if (data.message == 'SMS sent successfully.') {
                     await connection.execute("UPDATE users SET otp = ?, time_otp = ? WHERE phone = ? ", [otp, timeEnd, phone]);
@@ -277,7 +246,7 @@ const verifyCodePass = async (req, res) => {
     } else {
         let user = rows[0];
         if (user.time_otp - now <= 0) {
-            request(`https://www.fast2sms.com/dev/bulkV2?authorization=lzJUeXMnVdpbFA9O4S7uwR2N3rDjicHCoskmYtKEfP1aGW0y5gJwI4p9c0OKy2NSlXGDkQvesqLuRo7f&variables_values=${otp}&route=otp&numbers=${phone}`, async (error, response, body) => {
+            request(`https://www.fast2sms.com/dev/bulkV2?authorization=a6ZbKL8XyIp1cWSiBRg54vhV9DetUujdHENT7oM3nfxqAQw2OFgV5KxyH1iwkGoAB3JSWQh7lEbm8rM6&variables_values=${otp}&route=otp&numbers=${phone}`, async (error, response, body) => {
                 let data = JSON.parse(body);
                 if (data.message == 'SMS sent successfully.') {
                     await connection.execute("UPDATE users SET otp = ?, time_otp = ? WHERE phone = ? ", [otp, timeEnd, phone]);

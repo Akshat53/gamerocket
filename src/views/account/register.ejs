@@ -79,7 +79,7 @@
                             oninput="value=value.replace(/\D/g,'')">
                     </div>
                     <!---->
-                    <div data-v-51f72da1="" class="item c-row c-row-center c-row-middle m-b-30">
+                    <!-- <div data-v-51f72da1="" class="item c-row c-row-center c-row-middle m-b-30">
                         <span data-v-51f72da1="" class="img c-row c-row-middle-center">
                             <img data-v-51f72da1="" height="22px" width="15px" src="/images/smart_phone.png"
                                 class="mobile">
@@ -88,7 +88,7 @@
                         <button data-v-51f72da1="" class="otp">OTP</button>
                     </div>
                     <div data-v-51f72da1="" class="tip">Didn't receive the OTP code? Please contact customer support.
-                    </div>
+                    </div> -->
                     <!---->
                     <div data-v-7ee4aaeb="" class="item c-row c-row-center c-row-middle m-b-30">
                         <span data-v-7ee4aaeb="" class="img c-row c-row-middle-center">
@@ -97,6 +97,14 @@
                         </span>
                         <input data-v-d8986e5e="" id="password" data-v-7ee4aaeb="" type="password"
                             placeholder="Password" οnkeyup="value=value.replace(/[^\w\.\ ///ig,'')" class="pw-input">
+                    </div>
+                    <div data-v-7ee4aaeb="" class="item c-row c-row-center c-row-middle m-b-30">
+                        <span data-v-7ee4aaeb="" class="img c-row c-row-middle-center">
+                            <img data-v-7ee4aaeb="" height="20px" width="18px" src="/images/password.png"
+                                class="password">
+                        </span>
+                        <input data-v-d8986e5e="" id="confirmPassword" data-v-7ee4aaeb="" type="password"
+                            placeholder="Confirm Password" οnkeyup="value=value.replace(/[^\w\.\ ///ig,'')" class="pw-input">
                     </div>
                     <div data-v-7ee4aaeb="" class="item c-row c-row-center c-row-middle">
                         <span data-v-7ee4aaeb="" class="img c-row c-row-middle-center">
@@ -238,23 +246,27 @@
             }
         }
 
-        function validateForm(username, password,otp, checkbox, text) {
-            if (!username ||!otp|| !checkbox || !password) {
-                alertMess(text);
-                return false;
-            } else {
-                return true;
-            }
-        }
+        function validateForm(username, password, confirmPassword, checkbox, text) {
+    if (!username || !checkbox || !password || !confirmPassword) {
+        alertMess(text);
+        return false;
+    } else if (password !== confirmPassword) {
+        alertMess('Passwords do not match. Please re-enter.');
+        return false;
+    } else {
+        return true;
+    }
+}
 
         $('#submit').click(async (e) => {
             e.preventDefault();
             let username = $('#username').val().trim();
-            let otp = $('#otp').val().trim();
+            // let otp = $('#otp').val().trim();
             let password = $('#password').val().trim();
+            let confirmPassword = $('#confirmPassword').val().trim();
             let invite = $('#invite').val().trim();
             let checkbox = $('.van-checkbox__icon').hasClass('van-checkbox__icon--checked');
-            let status = validateForm(username, password,otp,checkbox, 'Please fill in required fields');
+            let status = validateForm(username, password,confirmPassword,checkbox, 'Please fill in required fields');
             if (status) {
                 $('.van-overlay').fadeIn(10);
                 $.ajax({
@@ -264,7 +276,7 @@
                         username: username,
                         pwd: password,
                         invitecode: invite,
-                        otp: otp,
+                        // otp: otp,
                         
                     },
                     dataType: "json",

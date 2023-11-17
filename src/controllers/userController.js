@@ -27,7 +27,7 @@ const verifyCode = async (req, res) => {
     }
     let user = rows[0];
     if (user.time_otp - now <= 0) {
-        request(`https://www.fast2sms.com/dev/bulkV2?authorization=lzJUeXMnVdpbFA9O4S7uwR2N3rDjicHCoskmYtKEfP1aGW0y5gJwI4p9c0OKy2NSlXGDkQvesqLuRo7f&variables_values=${otp}&route=otp&numbers=${user.phone}`, async (error, response, body) => {
+        request(`https://www.fast2sms.com/dev/bulkV2?authorization=a6ZbKL8XyIp1cWSiBRg54vhV9DetUujdHENT7oM3nfxqAQw2OFgV5KxyH1iwkGoAB3JSWQh7lEbm8rM6&variables_values=${otp}&route=otp&numbers=${user.phone}`, async (error, response, body) => {
             let data = JSON.parse(body);
             if (data.code == '00000') {
                 await connection.execute("UPDATE users SET otp = ?, time_otp = ? WHERE phone = ? ", [otp, timeEnd, user.phone]);
